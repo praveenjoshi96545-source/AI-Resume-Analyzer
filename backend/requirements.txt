@@ -1,0 +1,7 @@
+Flask
+flask-cors
+PyPDF2
+scikit-learn
+nltk
+mysql-connector-python
+gunicorn
