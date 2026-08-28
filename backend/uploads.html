@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2, h3 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #4CAF50;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>AI Resume Analyzer</h1>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+
+        <input type="file" name="resume" accept=".pdf" required>
+
+        <br><br>
+
+        <button type="submit">Upload Resume</button>
+
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, setting up form listener...');
+            
+            const uploadForm = document.getElementById('uploadForm');
+            uploadForm.addEventListener('submit', async function(e) {
+                console.log('Form submit event fired');
+                e.preventDefault();
+                
+                const fileInput = document.querySelector('input[name="resume"]');
+                const files = fileInput.files;
+                
+                if (files.length === 0) {
+                    alert('Please select a file');
+                    return;
+                }
+                
+                console.log('File selected:', files[0].name);
+                
+                const formData = new FormData();
+                formData.append('resume', files[0]);
+                
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '<p>Processing... please wait.</p>';
+                
+                try {
+                    console.log('Sending fetch request to /upload');
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    console.log('Response received, status:', response.status);
+                    const text = await response.text();
+                    console.log('Response text:', text);
+                    
+                    if (!text) {
+                        resultDiv.innerHTML = '<p style="color:red;">Error: Empty response from server</p>';
+                        return;
+                    }
+                    
+                    const data = JSON.parse(text);
+                    console.log('Parsed JSON:', data);
+                    
+                    if (data.error) {
+                        resultDiv.innerHTML = '<p style="color:red;">Error: ' + data.error + '</p>';
+                        if (data.traceback) {
+                            resultDiv.innerHTML += '<pre style="color:red; font-size: 12px;">' + data.traceback + '</pre>';
+                        }
+                        return;
+                    }
+                    
+                    resultDiv.innerHTML = '<h2>Results:</h2>' +
+                        '<p><strong>Message:</strong> ' + data.message + '</p>' +
+                        '<p><strong>Skills Found:</strong> ' + (data.skills.length > 0 ? data.skills.join(', ') : 'No skills found') + '</p>' +
+                        '<p><strong>ATS Score:</strong> ' + data.ats_score + '</p>' +
+                        '<p><strong>AI Job Match:</strong> ' + data.ai_match_score + '%</p>' +
+                        '<h3>Recommended Jobs:</h3><ul>' +
+                        (data.recommended_jobs.length > 0 ? 
+                            data.recommended_jobs.map(job => '<li><strong>' + job.job + '</strong> (' + job.match + '% match)<br/>Skills matched: ' + (job.skills.length > 0 ? job.skills.join(', ') : 'None') + '</li>').join('') :
+                            '<li>No jobs matched</li>') +
+                        '</ul>';
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    resultDiv.innerHTML = '<p style="color:red;">Error: ' + error.message + '</p>';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

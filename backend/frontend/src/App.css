@@ -1,0 +1,64 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+}
+
+.container {
+  width: 80%;
+  max-width: 900px;
+  margin: 50px auto;
+  text-align: center;
+}
+
+h1 {
+  font-size: 40px;
+}
+
+input {
+  margin: 20px;
+}
+
+button {
+  padding: 12px 25px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.result {
+  margin-top: 40px;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.skill {
+  display: inline-block;
+  padding: 8px 15px;
+  margin: 5px;
+  background: #eeeeee;
+  border-radius: 20px;
+}
+
+.job {
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.error {
+  margin-top: 20px;
+  padding: 15px;
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 8px;
+  color: #c62828;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
