@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 import os
 import traceback
 
@@ -10,16 +11,12 @@ from ai_analyzer import compare_resume_with_job
 
 
 app = Flask(__name__)
+CORS(app)
 
 UPLOAD_FOLDER = os.path.join(app.root_path, "uploads")
 
 
-@app.after_request
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-    return response
+
 
 
 if not os.path.exists(UPLOAD_FOLDER):
